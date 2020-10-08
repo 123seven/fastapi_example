@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+  redis:
+    image: redis:3.2
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./deploy/redis/conf:/usr/local/etc/redis/
+      - ./deploy/redis/data:/data
+      - ./deploy/redis/log:/data/log
+    command: redis-server /usr/local/etc/redis/redis.conf --appendonly yes
+    container_name: backend_redis
+
+  mysql:
+    restart: always
+    image: mysql:5.7.22
+    container_name: mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: ikpay
+      MYSQL_ROOT_PASSWORD: ikpay.2020
+    command:
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+      --max_allowed_packet=128M
+      --sql-mode="STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO"
+    volumes:
+      - /usr/local/docker/mysql:/var/lib/mysql
+
+  service:
+    build: .
+    volumes:
+      - .:/app/
+    ports:
+      - "9988:80"
+    env_file:
+      - ./.env
+    container_name: fastapi_example
+    depends_on:
+      - "mysql"
