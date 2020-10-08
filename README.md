@@ -92,3 +92,6 @@
 ### Update
 
     1. sh update.sh
+    
+## 初始化数据库
+    找到 `models/migrate.py` 文件，修改默认管理员账号秘密，再执行即可。
