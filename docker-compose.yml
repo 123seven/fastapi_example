@@ -19,8 +19,8 @@ services:
     ports:
       - 3306:3306
     environment:
-      MYSQL_DATABASE: ikpay
-      MYSQL_ROOT_PASSWORD: ikpay.2020
+      MYSQL_DATABASE: fastapi_example
+      MYSQL_ROOT_PASSWORD: fastapi_example.2020
     command:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_general_ci
