@@ -9,5 +9,4 @@ router = APIRouter()
 
 @router.get('/healthz/', summary='健康检查')
 async def monitor():
-    conn = Tortoise.get_connection('default')
     return 'ok'
