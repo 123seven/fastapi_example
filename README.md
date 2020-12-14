@@ -34,25 +34,25 @@
 ├── README.md
 ├── apps                        apps目录
 │   ├── __init__.py
-│   ├── admin                  管理后台接口
+│   ├── admin                   管理后台接口
 │   │   ├── __init__.py
 │   │   └── admin.py
-│   └── api                    API接口
+│   └── api                     API接口
 │       ├── __init__.py
-│       └── v1                 API v1 路由
+│       └── v1                  API v1 路由
 │           ├── __init__.py
-│           └── healthz.py     健康检查
+│           └── healthz.py      健康检查
 ├── conf                        配置文件目录
 │   ├── __init__.py
 │   └── config
-│       ├── __init__.py        载入配置
-│       └── base.py            基础配置
+│       ├── __init__.py         载入配置
+│       └── base.py             基础配置
 ├── docker-compose.yml
 ├── gunicorn_conf.py            gunicorn 配置
 ├── logs                        log文件夹
 ├── main.py                     程序入口
 ├── models                      数据库model
-│   ├── __init__.py            model基础类
+│   ├── __init__.py             model基础类
 │   ├── admin.py
 │   └── migrate.py            
 ├── requirements.txt            项目python依赖
@@ -66,16 +66,15 @@
     ├── __init__.py
     ├── depends                 请求依赖处理
     │   ├── __init__.py
-    │   ├── authentication.py  用户认证
-    │   └── rbac.py            接口权限检查
+    │   ├── authentication.py   用户认证
+    │   └── rbac.py             接口权限检查
     ├── exception.py            异常处理
     ├── middleware              中间件
     │   └── __init__.py
-    │   └── log.py             log处理中间件
+    │   └── log.py              log处理中间件
     ├── response.py             统一返回封装
     └── tools                   常用工具
         ├── __init__.py
-        ├── apollo_client.py    apollo相关操作
         ├── bitmap.py           位图相关操作
         ├── config.py           配置载入相关操作
         ├── dot_dict.py         提供字典的dot访问模式
