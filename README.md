@@ -90,11 +90,14 @@
 
 ## 项目启动
 
-### 初始化数据库
+### docker
 
-    1. 找到 models/migrate.py 文件，修改默认管理员账号秘密
-    2. python 执行 models/migrate.py 文件
-
+    1. 执行 echo "CONF_MODULE=base" > .env
+    2. docker-compose build
+    3. docker-compose up -d
+    4. docker exec -i -t fastapi_example bash
+    5. python models/migrate.py 
+    
 ### 本地
 
     1. 执行 echo "from .base import *" > conf/config/local.py
@@ -104,10 +107,15 @@
 
     1. 执行 echo "from .base import *" > conf/config/test.py 
     2. 添加你的配置到 conf/config/test.py 中
-    2. 执行 echo "CONF_MODULE=dev" > .env
+    2. 执行 echo "CONF_MODULE=test" > .env
     3. docker-compose build 
     4. docker-compose up -d 
+    
+### 初始化数据库
 
+    1. 找到 models/migrate.py 文件，修改默认管理员账号秘密
+    2. python 执行 models/migrate.py 文件
+    
 ### OpenAPI 地址
 
     1. http://0.0.0.0:8000/docs

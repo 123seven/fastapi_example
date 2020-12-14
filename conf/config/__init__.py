@@ -10,6 +10,7 @@ from utils import Config
 
 # 配置文件映射
 CONF_NAME_MAPPER = {
+    'base': 'conf.config.base',
     'local': 'conf.config.local',
     'test': 'conf.config.test',
     'prod': 'conf.config.prod',
