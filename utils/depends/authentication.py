@@ -27,7 +27,8 @@ async def jwt_authentication(request: Request, authorization: str = Header(None,
                 raise HTTPException(403, '账号不存在')
             if result.enabled is False:
                 raise HTTPException(200, '账号已被禁用，请联系管理员')
-            setattr(request, 'admin', result)
+            # 权限检查
+            await request.scope.setdefault('user', result)
             return
         except (KeyError, TypeError, DecodeError, ExpiredSignatureError):
             raise HTTPException(403, 'TOKEN错误')
@@ -35,7 +36,7 @@ async def jwt_authentication(request: Request, authorization: str = Header(None,
         raise HTTPException(403, 'TOKEN不存在')
 
 
-def get_token(user_pk: int, _type: str = 'admin', expiration=60 * 60 * 24 * 5):
+def get_token(user_pk: int, _type: str = 'admin', expiration: int = 60 * 60 * 24 * 5) -> str:
     """
     获取token
     :param user_pk: 用户主键
@@ -58,7 +59,7 @@ def get_token_data(token: str, _type: str = 'admin') -> dict:
     return jwt.decode(token, config.SECRET_KEY + _type, algorithms=[config.ALGORITHM])
 
 
-def set_data(data: dict, expiration=7200) -> str:
+def set_data(data: dict, expiration: int = 7200) -> str:
     """ 加密一个dict数据 """
     expire = datetime.datetime.utcnow() + datetime.timedelta(seconds=expiration)
     to_encode = {'exp': expire}

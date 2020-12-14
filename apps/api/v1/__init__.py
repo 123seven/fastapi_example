@@ -5,6 +5,10 @@
 
 from fastapi import APIRouter
 
+from . import cbv as cbv_router
+from . import healthz as healthz_router
+
 api_router = APIRouter()
 
-# api_router.include_router(xxx.router, prefix='/v1', tags=['v1'])
+api_router.include_router(healthz_router.router, prefix='/v1', tags=['v1'])
+api_router.include_router(cbv_router.router, prefix='/v1', tags=['v1-cbv'])

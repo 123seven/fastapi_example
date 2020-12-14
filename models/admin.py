@@ -2,40 +2,26 @@
 # @Author  : Seven
 # @File    : admin.py
 # @Desc    : admin model
-from enum import IntEnum
 
 from passlib.context import CryptContext
 from tortoise import fields
 
 from models import BaseModelMixin
-from utils.enum import EnumMixin
-from utils.fields import LocalDatetimeField
+from utils.tools.fields import LocalDatetimeField
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-class Type(EnumMixin, IntEnum):
-    super_admin = 0
-    admin = 1
-
-    @classmethod
-    def choices(cls):
-        return {
-            cls.super_admin: '超级管理员',
-            cls.off: '管理员'
-        }
-
-
 class Admin(BaseModelMixin):
+    """
+    用户表
+    """
     account = fields.CharField(max_length=32, unique=True, null=True, description='管理员账号')
     password = fields.CharField(max_length=128, null=True, description='密码')
 
     nickname = fields.CharField(max_length=32, null=True, description='管理员昵称')
     avatar_url = fields.CharField(max_length=255, null=True, description='头像URL')
     wechat_id = fields.CharField(max_length=32, null=True, description='微信号')
-
-    # SSO
-    uuid = fields.UUIDField(unique=True, null=True, description="SSO 用户ID")
     real_name = fields.CharField(max_length=32, null=True, description='真实姓名')
     email = fields.CharField(max_length=32, null=True, description='邮箱')
     mobile = fields.CharField(max_length=30, null=True, description='手机号码')
@@ -44,6 +30,9 @@ class Admin(BaseModelMixin):
     type = fields.IntField(description='管理员类型0:超级管理员1:管理员')
     last_at = LocalDatetimeField(null=True, description='最后登录时间')
     remark = fields.CharField(max_length=255, null=True, description='备注')
+    role: fields.ManyToManyRelation["Role"] = fields.ManyToManyField(
+        "models.Role", related_name="user", null=True, description="角色"
+    )
 
     class Meta:
         exclude = ('password',)
@@ -62,7 +51,7 @@ class Admin(BaseModelMixin):
         return pwd_context.verify(raw_password, self.password)
 
     @staticmethod
-    async def create_super_admin(account='super_admin', password='12345') -> object:
+    async def create_super_admin(account='super_admin', password='12345') -> 'Admin':
         """ 创建超级管理员
         :param account: str 管理员账号
         :param password: str 密码
@@ -94,3 +83,25 @@ class Admin(BaseModelMixin):
         if self.avatar_url:
             return self.avatar_url
         return 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
+
+
+class Permission(BaseModelMixin):
+    """
+    权限
+    """
+    name = fields.CharField(max_length=64, null=True, description='操作名称')
+    method = fields.CharField(max_length=50, null=True, description="方法")
+    path = fields.CharField(max_length=255, null=True, description='path')
+    tags = fields.CharField(max_length=64, null=True, description='标签')
+    remark = fields.CharField(max_length=255, null=True, description='备注')
+
+
+class Role(BaseModelMixin):
+    """
+    角色表
+    """
+    name = fields.CharField(max_length=255, null=True, description='角色名称')
+    status = fields.IntField(default=1, description="角色状态 0:禁用 1:启用")
+    permissions: fields.ManyToManyRelation["Permission"] = fields.ManyToManyField(
+        "models.Permission", related_name="role", null=True, description="权限")
+    remark = fields.CharField(max_length=255, null=True, description='备注')

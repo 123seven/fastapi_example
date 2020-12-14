@@ -1,17 +1,6 @@
 version: "3"
 
 services:
-  redis:
-    image: redis:3.2
-    ports:
-      - "6379:6379"
-    volumes:
-      - ./deploy/redis/conf:/usr/local/etc/redis/
-      - ./deploy/redis/data:/data
-      - ./deploy/redis/log:/data/log
-    command: redis-server /usr/local/etc/redis/redis.conf --appendonly yes
-    container_name: backend_redis
-
   mysql:
     restart: always
     image: mysql:5.7.22

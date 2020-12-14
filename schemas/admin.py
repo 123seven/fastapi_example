@@ -4,12 +4,10 @@
 # @Desc    : admin schema
 
 
-from pydantic import Field
-
-from utils.serializers import AutoModelSerializer
+from pydantic import BaseModel, Field
 
 
-class AdminModel(AutoModelSerializer):
+class AdminModel(BaseModel):
     account: str = Field(max_length=32, description='管理员账号')
     password: str = Field(max_length=128, description='密码')
     nickname: str = Field(None, max_length=32, null=True, description='管理员昵称')
@@ -19,7 +17,7 @@ class AdminModel(AutoModelSerializer):
     wechat_id: str = Field(None, max_length=32, null=True, description='微信号')
 
 
-class AdminUpdateModel(AutoModelSerializer):
+class AdminUpdateModel(BaseModel):
     password: str = Field(None, max_length=128, null=True, description='密码')
     nickname: str = Field(None, max_length=32, null=True, description='管理员昵称')
     avatar_url: str = Field(None, max_length=255, null=True, description='头像URL')

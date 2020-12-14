@@ -13,8 +13,8 @@ from tortoise.queryset import Q
 from models.admin import Admin
 from schemas.admin import AdminModel, AdminUpdateModel
 from utils import success_response, parameter_error_response
-from utils.authentication import get_token
-from utils.paginator import paginator
+from utils.depends.authentication import get_token
+from utils.tools.paginator import paginator
 
 router = APIRouter()
 login_router = APIRouter()
@@ -34,7 +34,7 @@ async def check_admin(admin_id: int) -> Admin:
     return result
 
 
-@router.get('/', summary='获取admin列表')
+@router.get('', summary='获取admin列表')
 async def lists(
         user_info: str = Query(None, description='account or nickname 模糊查询'),
         admin_type: str = Query(None, description='管理员类型过滤'),
@@ -54,9 +54,9 @@ async def lists(
     return success_response([item.excludes(('password',)).data for item in data], {'count': count})
 
 
-@router.post('/', summary='创建admin')
+@router.post('', summary='创建admin')
 async def create(request: Request, admin: AdminModel = Body(..., )):
-    if request.admin.type != 0:
+    if request.user.type != 0:
         return parameter_error_response('权限不够，无法创建管理员账号')
     result = await Admin.get_or_none(account=admin.account, enabled=True, deleted=False)
     if result:
@@ -70,14 +70,14 @@ async def create(request: Request, admin: AdminModel = Body(..., )):
     return success_response(r.data)
 
 
-@router.get('/{admin_id}/', summary='获取admin详情')
+@router.get('/{admin_id}', summary='获取admin详情')
 async def retrieve(admin_id: int):
     result = await check_admin(admin_id)
     result.excludes(('password', 'updated_at'))
     return success_response(result.data)
 
 
-@router.put('/{admin_id}/enabled/', summary='admin禁用')
+@router.put('/{admin_id}/enabled', summary='admin禁用')
 async def enabled(admin_id: int):
     result = await Admin.get_or_none(id=admin_id, deleted=False)
     if not result:
@@ -90,12 +90,12 @@ async def enabled(admin_id: int):
     return success_response()
 
 
-@router.put('/{admin_id}/', summary='更新admin信息')
+@router.put('/{admin_id}', summary='更新admin信息')
 async def update(request: Request, admin_id: int, admin: AdminUpdateModel = Body(..., )):
     result = await check_admin(admin_id)
     # 不是超级管理员 不是自己的账号不能修改
-    if request.admin.type != 0:
-        if request.admin.pk != result.pk:
+    if request.user.type != 0:
+        if request.user.pk != result.pk:
             return parameter_error_response('权限不够，不能修改他人账号信息')
     # 使用 dict update 更新
     result.__dict__.update(**admin.dict(exclude_unset=True))
@@ -110,9 +110,9 @@ async def update(request: Request, admin_id: int, admin: AdminUpdateModel = Body
     return success_response(result.data)
 
 
-@router.delete('/{admin_id}/', summary='删除admin信息')
+@router.delete('/{admin_id}', summary='删除admin信息')
 async def delete(request: Request, admin_id: int):
-    if request.admin.type != 0:
+    if request.user.type != 0:
         return parameter_error_response('权限不够，无法删除管理员账号')
     instance = await check_admin(admin_id)
     if instance.type == 0:
@@ -123,7 +123,7 @@ async def delete(request: Request, admin_id: int):
     return success_response('删除成功')
 
 
-@login_router.post('/login/', summary='管理员登录')
+@login_router.post('/login', summary='管理员登录')
 async def login(account: str = Body(..., title='账号'), password: str = Body(..., title='密码')):
     result = await Admin.get_or_none(account=account, deleted=False)
     if not result:

@@ -4,31 +4,8 @@
 # @Desc    : Response
 from typing import Any
 
-import orjson
-from fastapi import HTTPException
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import Response, RedirectResponse
+from fastapi.responses import ORJSONResponse
 from pydantic import BaseModel
-from starlette.requests import Request
-
-
-class JSONResponse(Response):
-    media_type = "application/json"
-
-    def render(self, content: Any) -> orjson:
-        return orjson.dumps(
-            content
-        )
-
-
-async def http_error_handler(_: Request, exc: HTTPException) -> JSONResponse:
-    response_data = {'code': exc.status_code * 100, 'message': '错误 | Fail', 'error': exc.detail}
-    return JSONResponse(response_data)
-
-
-async def validation_error_handler(_: Request, exc: RequestValidationError) -> JSONResponse:
-    response_data = {'code': 422, 'message': '参数错误 | Fail', 'error': exc.errors(), "body": exc.body}
-    return JSONResponse(response_data)
 
 
 class Default(BaseModel):
@@ -36,22 +13,22 @@ class Default(BaseModel):
     message: str or None = None
 
 
-def success_response(data: Any = None, kwargs: dict = None) -> JSONResponse:
+def success_response(data: Any = None, kwargs: dict = None) -> ORJSONResponse:
     """
     Success Response
     :param data: response data
     :param kwargs: update JSON Response kwargs
     :return: JSONResponse
     """
-    response_data = {'code': 0, 'message': '成功 | Success'}
+    response_data = {'code': 20000, 'message': '成功 | Success'}
     if data is not None:
         response_data['data'] = data
     if kwargs:
         response_data.update(kwargs)
-    return JSONResponse(response_data)
+    return ORJSONResponse(response_data)
 
 
-def parameter_error_response(error: str = None, kwargs: dict = None) -> JSONResponse:
+def parameter_error_response(error: str = None, kwargs: dict = None) -> ORJSONResponse:
     """
     Parameter Error Response
     :param error: error str
@@ -63,10 +40,10 @@ def parameter_error_response(error: str = None, kwargs: dict = None) -> JSONResp
         response_data['error'] = error
     if kwargs:
         response_data.update(kwargs)
-    return JSONResponse(response_data, status_code=200)
+    return ORJSONResponse(response_data, status_code=200)
 
 
-def server_error_response(error: str = None, kwargs: dict = None) -> JSONResponse:
+def server_error_response(error: str = None, kwargs: dict = None) -> ORJSONResponse:
     """
     Server Error Response
     :param error: error str
@@ -78,8 +55,7 @@ def server_error_response(error: str = None, kwargs: dict = None) -> JSONRespons
         response_data['error'] = error
     if kwargs:
         response_data.update(kwargs)
-    return JSONResponse(response_data, status_code=500)
+    return ORJSONResponse(response_data, status_code=500)
 
 
-__all__ = ['success_response', 'parameter_error_response', 'server_error_response', 'http_error_handler', 'Default',
-           'validation_error_handler']
+__all__ = ['success_response', 'parameter_error_response', 'server_error_response', 'Default']

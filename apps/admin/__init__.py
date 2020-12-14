@@ -6,7 +6,8 @@
 
 from fastapi import APIRouter, Depends
 
-from utils.authentication import jwt_authentication
+from utils.depends.authentication import jwt_authentication
+from utils.depends.rbac import rbac_check
 from . import admin as router_admin
 
 admin_router = APIRouter()
@@ -16,10 +17,10 @@ admin_router.include_router(
     prefix='/admin',
     tags=['admin']
 )
-# jwt 认证
+# jwt认证/rbac权限
 admin_router.include_router(
     router_admin.router,
     prefix='/admin',
     tags=['admin'],
-    dependencies=[Depends(jwt_authentication)],
+    dependencies=[Depends(jwt_authentication), Depends(rbac_check)],
 )

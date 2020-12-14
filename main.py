@@ -4,8 +4,6 @@
 # @Desc    : 程序入口
 
 
-import os
-
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
@@ -16,19 +14,16 @@ from apps.admin import admin_router
 from apps.api.v1 import api_router
 from conf.config import config
 from models import init_db
-from utils.response import http_error_handler, validation_error_handler
+from utils import http_error_handler, validation_error_handler
 
 
 def add_event_handler(application: FastAPI) -> None:
-    # 读取.env文件
-    conf_env = os.environ.get('CONF_MODULE')
-    # 数据库连接/关闭
-    if conf_env != 'ci':
-        init_db(application)
+    init_db(application)
 
 
 def get_application() -> FastAPI:
     logger.debug(f"CONF:{config.__dict__}")
+
     # 初始化 FastAPI app
     application = FastAPI(
         title=config.PROJECT_NAME,

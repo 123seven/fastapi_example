@@ -11,10 +11,10 @@ from tortoise import BackwardFKRelation, QuerySet
 from tortoise import fields, Model
 from tortoise.contrib.fastapi import register_tortoise
 from tortoise.fields import ManyToManyRelation
-from tortoise.fields.relational import _NoneAwaitable
+from tortoise.fields.relational import NoneAwaitable
 
 from conf.config import config
-from utils.fields import LocalDatetimeField
+from utils.tools.fields import LocalDatetimeField
 
 
 def init_db(app: FastAPI):
@@ -75,9 +75,9 @@ class BaseModelMixin(Model):
         return self._serialize()
 
     async def get_data(self) -> dict:
-        return await self.async_serialize()
+        return await self._async_serialize()
 
-    async def async_serialize(self) -> dict:
+    async def _async_serialize(self) -> dict:
         field_list = self.set_fields()
         data = OrderedDict()
         for key in field_list:
@@ -86,7 +86,7 @@ class BaseModelMixin(Model):
             else:
                 value = getattr(self, key)
             # 如果返回的是model类型就异步调用之前定义好的方法
-            if isinstance(value, (Model, ManyToManyRelation, QuerySet, _NoneAwaitable)):
+            if isinstance(value, (Model, ManyToManyRelation, QuerySet, NoneAwaitable.__class__)):
                 value = await getattr(self, f'async_get_{key}')()
             if isinstance(value, decimal.Decimal):
                 value = str(value)
@@ -103,6 +103,8 @@ class BaseModelMixin(Model):
                 value = getattr(self, key)
             if isinstance(value, decimal.Decimal):
                 value = str(value)
+            if isinstance(value, (Model, ManyToManyRelation, QuerySet, NoneAwaitable.__class__)):
+                value = None
             data.setdefault(key, value)
         return data
 
@@ -122,4 +124,4 @@ class BaseModelMixin(Model):
         return self.updated_at.strftime('%Y-%m-%d %H:%M:%S')
 
 
-__all__ = ['init_db', 'BaseModelMixin']
+__all__ = ['init_db', 'BaseModelMixin', ]

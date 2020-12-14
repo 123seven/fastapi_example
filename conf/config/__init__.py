@@ -11,7 +11,7 @@ from utils import Config
 # 配置文件映射
 CONF_NAME_MAPPER = {
     'local': 'conf.config.local',
-    'dev': 'conf.config.dev',
+    'test': 'conf.config.test',
     'prod': 'conf.config.prod',
     'ci': 'conf.config.ci',
 }

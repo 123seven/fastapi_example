@@ -158,6 +158,16 @@ class Config(dict):
             rv[key] = v
         return rv
 
+    def get_conf(self, key):
+        if self.__dict__.get('APOLLO_USE', True):
+            return self._apollo_get(key)
+        return self.get(key)
+
+    def _apollo_get(self, attr):
+        if hasattr(self, 'apollo_client'):
+            return self.apollo_client.get_value_default_namespace(attr, self.get(attr))
+        return self.get(attr)
+
     def __repr__(self):
         return '<%s %s>' % (self.__class__.__name__, dict.__repr__(self))
 
