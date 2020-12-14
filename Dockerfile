@@ -3,9 +3,6 @@ FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7
 # Bash
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
-# 维护者
-MAINTAINER seven <seven@ik.com>
-
 # Time
 ENV TZ "Asia/Shanghai"
 ENV TERM xtermENV TERM xterm
