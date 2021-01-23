@@ -25,7 +25,7 @@ def add_event_handler(application: FastAPI) -> None:
     # REDIS连接/关闭
     init_redis(application)
     # 定时任务
-    if config.get_conf('SCHEDULER_USE'): init_scheduler(application)
+    if config.SCHEDULER_USE: init_scheduler(application)
 
 
 def get_application() -> FastAPI:

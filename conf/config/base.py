@@ -30,3 +30,6 @@ MODELS: Dict[str, List[str]] = {'models': ['models.admin', ]}
 # jwt token 设置
 SECRET_KEY: str = '09d25q3e094faa6ca2w556c818wqy313f7099f6f0f4caa6cf63b88e8r53d3e7'
 ALGORITHM: str = "HS256"
+
+# 是否开启定时任务
+SCHEDULER_USE: bool = os.environ.get('SCHEDULER_USE') or False
