@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends
 from utils.depends.authentication import jwt_authentication
 from utils.depends.rbac import rbac_check
 from . import admin as router_admin
+from . import scheduler as router_scheduler
 
 admin_router = APIRouter()
 
@@ -21,6 +22,14 @@ admin_router.include_router(
 admin_router.include_router(
     router_admin.router,
     prefix='/admin',
+    tags=['admin'],
+    dependencies=[Depends(jwt_authentication), Depends(rbac_check)],
+)
+
+# scheduler
+admin_router.include_router(
+    router_scheduler.router,
+    prefix='/scheduler',
     tags=['admin'],
     dependencies=[Depends(jwt_authentication), Depends(rbac_check)],
 )

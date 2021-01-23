@@ -15,10 +15,17 @@ from apps.api.v1 import api_router
 from conf.config import config
 from models import init_db
 from utils import http_error_handler, validation_error_handler
+from utils.tools import init_scheduler
+from utils.tools.redis import init_redis
 
 
 def add_event_handler(application: FastAPI) -> None:
+    # 数据库连接/关闭
     init_db(application)
+    # REDIS连接/关闭
+    init_redis(application)
+    # 定时任务
+    if config.get_conf('SCHEDULER_USE'): init_scheduler(application)
 
 
 def get_application() -> FastAPI:

@@ -28,9 +28,9 @@ async def check_admin(admin_id: int) -> Admin:
     """
     result = await Admin.get_or_none(id=admin_id, deleted=False)
     if not result:
-        raise HTTPException(200, '账号不存在')
+        raise HTTPException(400, '账号不存在')
     if not result.enabled:
-        raise HTTPException(200, '账号已被禁用，请联系管理员')
+        raise HTTPException(400, '账号已被禁用，请联系管理员')
     return result
 
 
@@ -60,7 +60,7 @@ async def create(request: Request, admin: AdminModel = Body(..., )):
         return parameter_error_response('权限不够，无法创建管理员账号')
     result = await Admin.get_or_none(account=admin.account, enabled=True, deleted=False)
     if result:
-        raise HTTPException(200, '账号已存在')
+        raise HTTPException(400, '账号已存在')
     data = admin.dict(exclude_unset=True)
     data.setdefault('type', 1)
     r = await Admin.create(**data)
@@ -81,7 +81,7 @@ async def retrieve(admin_id: int):
 async def enabled(admin_id: int):
     result = await Admin.get_or_none(id=admin_id, deleted=False)
     if not result:
-        raise HTTPException(200, '账号不存在')
+        raise HTTPException(400, '账号不存在')
     if result.enabled:
         result.enabled = False
     else:
@@ -127,15 +127,15 @@ async def delete(request: Request, admin_id: int):
 async def login(account: str = Body(..., title='账号'), password: str = Body(..., title='密码')):
     result = await Admin.get_or_none(account=account, deleted=False)
     if not result:
-        raise HTTPException(200, '账号不存在')
+        raise HTTPException(400, '账号不存在')
     if result.enabled is not True:
-        raise HTTPException(200, '账号已经被禁用，请联系超级管理员')
+        raise HTTPException(400, '账号已经被禁用，请联系超级管理员')
     try:
         if not result.check_password(password):
-            raise HTTPException(200, '密码错误，请检查')
+            raise HTTPException(400, '密码错误，请检查')
     except Exception as e:
         logger.error(e)
-        raise HTTPException(200, '密码错误，请检查')
+        raise HTTPException(400, '密码错误，请检查')
     result.last_at = datetime.now()
     await result.save(update_fields=['last_at'])
     data = result.excludes(('password', 'deleted')).data
