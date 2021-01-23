@@ -33,3 +33,5 @@ ALGORITHM: str = "HS256"
 
 # 是否开启定时任务
 SCHEDULER_USE: bool = os.environ.get('SCHEDULER_USE') or False
+# REDIS_URI 配置
+REDIS_URI: str = os.environ.get('REDIS_URI') or 'redis://127.0.0.1/0'

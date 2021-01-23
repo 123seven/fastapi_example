@@ -80,7 +80,7 @@
         ├── dot_dict.py         提供字典的dot访问模式
         ├── fields.py           数据库fields相关操作
         ├── paginator.py        分页相关相关操作
-        └── redis.py            redis相关操作
+        └── redis.py            redis连接池相关操作
 
 14 directories, 38 files
 
@@ -93,20 +93,21 @@
 ### docker
 
     1. 执行 echo "CONF_MODULE=base" > .env
-    2. docker-compose build
-    3. docker-compose up -d
-    4. docker exec -i -t fastapi_example bash
-    5. python models/migrate.py 
+    2. 配置redis链接echo "REDIS_URI=redis://xxx" > .env 
+    3. docker-compose build
+    4. docker-compose up -d
+    5. docker exec -i -t fastapi_example bash
+    6. python models/migrate.py 
     
 ### 本地
 
     1. 执行 echo "from .base import *" > conf/config/local.py
-    2. 添加你的配置到 conf/config/local.py 中
+    2. 添加你的配置到 conf/config/local.py 中 注意: 需要配置redis链接地址
 
 ### 测试环境
 
     1. 执行 echo "from .base import *" > conf/config/test.py 
-    2. 添加你的配置到 conf/config/test.py 中
+    2. 添加你的配置到 conf/config/test.py 中 注意: 需要配置redis链接地址
     2. 执行 echo "CONF_MODULE=test" > .env
     3. docker-compose build 
     4. docker-compose up -d 
